@@ -42,6 +42,7 @@ namespace Valaswer {
             settings.set_user_agent("Mozilla/5.0 (Windows NT 6.1) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/41.0.2228.0 Safari/537.36");
             webview.load_uri(Configuration.HOMEPAGE);
             webview.load_changed.connect(onLoad);
+            webview.authenticate.connect(auth);
 
             var view = builder.get_object("viewport1") as Viewport;
             view.add(webview);
@@ -50,6 +51,17 @@ namespace Valaswer {
             input.activate.connect(onUrl);
 
             var hBar = builder.get_object("headerbar1") as HeaderBar;
+        }
+
+        public bool auth(AuthenticationRequest request) {
+            print("Auth!\n");
+            var authWin = new AuthWindow(request);
+            authWin.destroySig.connect(destroyAuthWin);
+            return true;
+        }
+
+        public void destroyAuthWin(AuthWindow authWin) {
+            authWin.destroy();
         }
 
         public void onLoad(LoadEvent event) {
