@@ -12,6 +12,8 @@ namespace Valaswer {
         private Entry input;
         private WebView webview;
         private Builder builder;
+        private Stack head;
+        private ProgressBar pbar;
 
         public BrowserWindow() {
             initWindow();
@@ -51,7 +53,11 @@ namespace Valaswer {
             input.activate.connect(onUrl);
             input.key_press_event.connect(inputKeyHandler);
 
-            var hBar = builder.get_object("headerbar1") as HeaderBar;
+            var hbar = builder.get_object("headerbar1") as HeaderBar;
+
+            head = builder.get_object("stack1") as Stack;
+            pbar = builder.get_object("progressbar1") as ProgressBar;
+            //pbar.min_hrizontal_bar_height = hbar.
         }
 
         public bool inputKeyHandler(Gdk.EventKey event) {
@@ -75,9 +81,17 @@ namespace Valaswer {
         }
 
         public void onLoad(LoadEvent event) {
+            if (event == LoadEvent.STARTED) {
+                head.set_visible_child_name("pBar");
+                pbar.set_fraction(0);
+            }
             (builder.get_object("label1") as Label).label = webview.title;
             input.text = webview.uri;
             sizeURLBar();
+            pbar.set_fraction(webview.estimated_load_progress);
+            if (event == LoadEvent.FINISHED) {
+                head.set_visible_child_name("urlBar");
+            }
         }
 
         public void onUrl() {
