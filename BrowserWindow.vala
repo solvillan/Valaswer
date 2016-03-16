@@ -49,8 +49,18 @@ namespace Valaswer {
 
             input = builder.get_object("entry1") as Entry;
             input.activate.connect(onUrl);
+            input.key_press_event.connect(inputKeyHandler);
 
             var hBar = builder.get_object("headerbar1") as HeaderBar;
+        }
+
+        public bool inputKeyHandler(Gdk.EventKey event) {
+            sizeURLBar();
+            return false;
+        }
+
+        public void sizeURLBar() {
+            input.set_width_chars(int.parse(input.text_length.to_string()));
         }
 
         public bool auth(AuthenticationRequest request) {
@@ -67,6 +77,7 @@ namespace Valaswer {
         public void onLoad(LoadEvent event) {
             (builder.get_object("label1") as Label).label = webview.title;
             input.text = webview.uri;
+            sizeURLBar();
         }
 
         public void onUrl() {
@@ -77,7 +88,6 @@ namespace Valaswer {
             } else {
                 webview.load_uri("http://" + input.text);
             }
-
         }
 
     }
